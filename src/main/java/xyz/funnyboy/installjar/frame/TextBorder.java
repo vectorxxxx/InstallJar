@@ -1,4 +1,4 @@
-package xyz.funnyboy.installjar.utils;
+package xyz.funnyboy.installjar.frame;
 
 import javax.swing.border.LineBorder;
 import java.awt.*;
@@ -10,12 +10,12 @@ import java.awt.*;
  * @version V1.0
  * @date 2024-01-09 19:59:15
  */
-public class TextBorderUtils extends LineBorder
+public class TextBorder extends LineBorder
 {
 
     private static final long serialVersionUID = 1L;
 
-    public TextBorderUtils(Color color, int thickness, boolean roundedCorners) {
+    public TextBorder(Color color, int thickness, boolean roundedCorners) {
         super(color, thickness, roundedCorners);
     }
 
