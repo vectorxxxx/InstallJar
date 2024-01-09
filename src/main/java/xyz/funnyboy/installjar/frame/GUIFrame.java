@@ -6,6 +6,8 @@ import xyz.funnyboy.installjar.manifest.ManifestMeta;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
@@ -14,6 +16,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -32,6 +35,13 @@ public class GUIFrame extends JFrame
     private final TextField versionField;
 
     public GUIFrame() {
+        this.setVisible(true);
+        this.setTitle("Install Jar");
+        this.setSize(400, 200);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        // 禁止改变大小
+        this.setResizable(false);
+
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.insets = new Insets(5, 5, 2, 2);
@@ -47,9 +57,9 @@ public class GUIFrame extends JFrame
         // 为 fileField 添加焦点监听器
         fileField.addFocusListener(new TextFocusListener());
         // 为 fileField 添加拖放监听器
-        fileField.setDragEnabled(true);
-        fileField.setDropTarget(new FileDropTarget());
-
+        // fileField.setDragEnabled(true);
+        // fileField.setDropTarget(new FileDropTarget());
+        fileField.setTransferHandler(new FileTransferHandler());
         constraints.gridx = 1;
         constraints.gridy = 0;
         constraints.gridwidth = 2;  // 设置文本框跨越两列
@@ -134,6 +144,51 @@ public class GUIFrame extends JFrame
         }
         else {
             versionField.setText("");
+        }
+    }
+
+    /**
+     * 文件传输处理程序
+     *
+     * @author VectorX
+     * @version 1.0.0
+     * @date 2024/01/09
+     * @see TransferHandler
+     */
+    private class FileTransferHandler extends TransferHandler
+    {
+        @Override
+        public int getSourceActions(JComponent c) {
+            // 拖放操作只能是拖放
+            return TransferHandler.COPY;
+        }
+
+        @Override
+        public boolean canImport(JComponent comp, DataFlavor[] flavors) {
+            // 允许拖放的类型为String
+            for (DataFlavor flavor : flavors) {
+                if (flavor.isMimeTypeEqual(DataFlavor.javaFileListFlavor)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public boolean importData(JComponent c, Transferable th) {
+            // 处理拖放的数据
+            try {
+                List<File> files = (List<File>) th.getTransferData(DataFlavor.javaFileListFlavor);
+                if (!files.isEmpty()) {
+                    File file = files.get(0);
+                    fileField.setText(file.getAbsolutePath());
+                    fillMavenInfoFromJar(file);
+                }
+            }
+            catch (UnsupportedFlavorException | IOException e) {
+                e.printStackTrace();
+            }
+            return true;
         }
     }
 

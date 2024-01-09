@@ -1,5 +1,7 @@
 package xyz.funnyboy.installjar.manifest;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.jar.Attributes;
@@ -18,6 +20,7 @@ public class ManifestMeta
     private static final String IMPLEMENTATION_VENDOR_ID = "Implementation-Vendor-Id";
     private static final String IMPLEMENTATION_TITLE = "Implementation-Title";
     private static final String IMPLEMENTATION_VERSION = "Implementation-Version";
+    private static final String SPECIFICATION_VERSION = "Specification-Version";
     private Attributes mainAttributes;
 
     public ManifestMeta(File jarFile) {
@@ -42,10 +45,10 @@ public class ManifestMeta
      * @return {@link String}
      */
     public String getGroupId() {
-        if (mainAttributes != null) {
-            return mainAttributes.getValue(IMPLEMENTATION_VENDOR_ID);
+        if (mainAttributes == null) {
+            return "";
         }
-        return "";
+        return mainAttributes.getValue(IMPLEMENTATION_VENDOR_ID);
     }
 
     /**
@@ -54,10 +57,10 @@ public class ManifestMeta
      * @return {@link String}
      */
     public String getArtifactId() {
-        if (mainAttributes != null) {
-            return mainAttributes.getValue(IMPLEMENTATION_TITLE);
+        if (mainAttributes == null) {
+            return "";
         }
-        return "";
+        return mainAttributes.getValue(IMPLEMENTATION_TITLE);
     }
 
     /**
@@ -66,9 +69,13 @@ public class ManifestMeta
      * @return {@link String}
      */
     public String getVersion() {
-        if (mainAttributes != null) {
-            return mainAttributes.getValue(IMPLEMENTATION_VERSION);
+        if (mainAttributes == null) {
+            return "";
         }
-        return "";
+        String version = mainAttributes.getValue(IMPLEMENTATION_VERSION);
+        if (StringUtils.isEmpty(version)) {
+            version = mainAttributes.getValue(SPECIFICATION_VERSION);
+        }
+        return version;
     }
 }
