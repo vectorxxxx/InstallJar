@@ -4,8 +4,10 @@ import xyz.funnyboy.installjar.utils.PathUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * InstallJar
@@ -34,7 +36,24 @@ public class MavenCommandExecutor
             Process process = processBuilder.start();
             int exitCode = process.waitFor();
             if (exitCode != 0) {
-                JOptionPane.showMessageDialog(parentComponent, "Error executing Maven command. Exit code: " + exitCode);
+                // 获取命令执行结果, 有两个结果: 正常的输出 和 错误的输出（PS: 子进程的输出就是主进程的输入）
+                BufferedReader bufrIn = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"));
+                BufferedReader bufrError = new BufferedReader(new InputStreamReader(process.getErrorStream(), "UTF-8"));
+
+                // 读取输出
+                StringBuilder result = new StringBuilder();
+                String line;
+                while ((line = bufrIn.readLine()) != null) {
+                    result
+                            .append(line)
+                            .append('\n');
+                }
+                while ((line = bufrError.readLine()) != null) {
+                    result
+                            .append(line)
+                            .append('\n');
+                }
+                JOptionPane.showMessageDialog(parentComponent, "Error executing Maven command: " + result);
                 return;
             }
 
