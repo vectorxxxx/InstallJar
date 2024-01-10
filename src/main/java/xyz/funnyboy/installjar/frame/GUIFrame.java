@@ -57,9 +57,9 @@ public class GUIFrame extends JFrame
         // 为 fileField 添加焦点监听器
         fileField.addFocusListener(new TextFocusListener());
         // 为 fileField 添加拖放监听器
-        // fileField.setDragEnabled(true);
-        // fileField.setDropTarget(new FileDropTarget());
-        fileField.setTransferHandler(new FileTransferHandler());
+        fileField.setDragEnabled(true);
+        fileField.setDropTarget(new FileDropTarget());
+        // fileField.setTransferHandler(new FileTransferHandler());
         constraints.gridx = 1;
         constraints.gridy = 0;
         constraints.gridwidth = 2;  // 设置文本框跨越两列
